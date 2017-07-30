@@ -56,4 +56,55 @@ package.xml文件，其中主要是三大部分：作者信息，许可类型以
 
 邮箱、姓名以及个人网站等等，许可类型一般为BSD，也有其他许可类型，具体可参见文件相应的注释。
 
-package.xml文件中的依赖项需要注意，
+package.xml文件中的依赖项需要注意，依赖项分为四部分，分别为：buildtool_depend,build_depend
+
+run_depend, test_depend,但常用的一般是前三个部分。
+
+第一部分，buildtool_depend,这个部分是固定的，统一为catkin
+
+第二部分，build_depend, 这部分主要填写编译时需要用到的包，在本例中，我们只需要最基本的，
+
+即rospy和message_generation
+
+第三部分，run_depend, 这部分主要时运行时需要用到的包，在本例中，也是只需要rospy和message_runtime
+
+下面讲解CMakeList的填写：
+
+本例中只使用了自己写的msg文件，并未写srv文件，也没有用到std_msgs消息，因此只需处理与message
+
+有关的函数：
+
+		find_package(catkin REQUIRED rospy message_generation)
+
+		add_message_files(FILES Figures.msg)
+
+		catkin_package(CATKIN_DEPENDS message_runtime)
+
+上面第一行和第三行代码与package.xml文件中相对应，中间add_message_files()函数，添加自定义的msg
+
+文件夹下的msg文件。
+
+上面工作完成后，切换到catkin_ws工作空间，执行编译命令
+
+		cd ~/catkin_ws
+		catkin_make
+
+编译完成之后，即可运行节点,注意每个命令都在一个新的终端执行：
+
+		roscore
+		rosrun learn_ros_figures_command commander.py
+		rosrun learn_ros_figures_command drawer.py
+
+运行之后，在commander终端中输入对应的消息，如circle，即可显示圆形图像。
+
+**launch文件的编写**
+
+launch文件就是一系列node的集合，可以方便的在一个文件中同时运行多个node，不用像上面一样一个个
+
+node运行，那样太麻烦。launch文件代码较为简单,参见包中launch/commander_drawer.launch文件即可。
+
+需要注意：
+
+launch文件运行时，不需要单独运行roscore，在ros机制中，运行launch文件时，roscore是自动默认运
+
+行的。
