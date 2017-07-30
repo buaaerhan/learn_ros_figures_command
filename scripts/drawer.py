@@ -18,7 +18,7 @@ def draw(figure):
         print 'Please input "circle"'
 
 def drawer():
-    rospy.init_node('figure_drawer',anonymous=True)
+    rospy.init_node('figures_drawer',anonymous=True)
     rospy.Subscriber('draw_figure',Figures,draw)
     rospy.spin()
 

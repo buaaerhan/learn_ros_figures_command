@@ -40,9 +40,20 @@ topic本质上来说就是一个字符串，通过ROS机制将这个字符串保
 
 渠道，topic本身不需要另写程序定义，只需要在定义节点时指定topic名称即可。在commander.py和drawer.py
 
-相应的代码如下：
+相应的代码分别如下：
 
-		def drawer():
-				rospy.init_node('figure_drawer',anonymous=True)
-				rospy.Subscriber('draw_figure',Figures,draw)
-				rospy.spin()
+		pub = rospy.Publisher('draw_figure',Figures,queue_size=10)
+
+		rospy.Subscriber('draw_figure',Figures,draw)
+
+**catkin文件编译系统**
+
+上面只是一个最简单的节点-话题-节点通信机制的演示，下面讲解catkin_make文件编译有关的文件。
+
+文档中package.xml和CMakeList.txt两个文件，在使用自己创建的msg文件时需要更改的地方，首先是
+
+package.xml文件，其中主要是三大部分：作者信息，许可类型以及相关依赖项。作者信息填写自己的
+
+邮箱、姓名以及个人网站等等，许可类型一般为BSD，也有其他许可类型，具体可参见文件相应的注释。
+
+package.xml文件中的依赖项需要注意，

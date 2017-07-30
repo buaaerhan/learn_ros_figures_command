@@ -1,0 +1,4 @@
+<launch>
+	<node name="figures_commander" pkg="learn_ros_figures_command" type="commander.py" output="screen"/>
+	<node name="figures_drawer" pkg="learn_ros_figures_command" type="drawer.py" output="screen"/>
+</launch>
