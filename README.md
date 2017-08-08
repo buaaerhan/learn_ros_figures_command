@@ -108,3 +108,40 @@ node运行，那样太麻烦。launch文件代码较为简单,参见包中launch
 launch文件运行时，不需要单独运行roscore，在ros机制中，运行launch文件时，roscore是自动默认运
 
 行的。
+
+## Service的编写
+
+从本质上来说，service与message差不多，都是用来实现ROS中node之间的通信。不同的是，service可以
+
+实现反馈，当一个node(client)接收到另一个node发送过来的service请求时，可以做出相应的反应，并且
+
+给出一个反馈信息。例如在本例中，如果画图的node接收到画图命令时，执行画图程序，并且给其客户端
+
+一个反馈，确认自己收到了这条命令并且正确执行了。
+
+service所实现的双向通信，其实仍然可以认为是单向的，只能由一个node发起请求，另一个node给出反馈，
+
+反馈方在没有收到请求时，是不能给client端发送消息的。
+
+要实现通过service的通信机制，首先要建立srv文件，可以认为是msg文件的扩展版。首先在包目录下建立
+
+srv文件夹，然后新建DrawConfig.srv文件，如下：
+
+		cd ~/catkin_ws/srv/learn_ros_figures_command
+		mkdir srv
+		cd srv
+		touch DrawConfig.srv
+
+在DrawConfig文件中输入如下代码：
+
+		string figures
+		---
+		string configuration
+
+注意，srv文件里的内容分为request和response两部分，以---分割，前面为request的类型，后面为response
+
+的类型，这里我们每部分都只有一个属性数据。如果有需要，你也可以分别对其加入更多的数据类型。我们
+
+看到，srv文件与msg文件极其类似，srv文件可以看成是双向的msg。
+
+

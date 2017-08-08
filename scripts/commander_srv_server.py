@@ -10,7 +10,7 @@ def handle_function(figure_command):
 
     print "You want to draw a %s"%figure_command.figures
     draw(figure_command)
-    return DrawConfigResponse("I got your request and this is a feedback information. OK!")
+    return DrawConfigResponse("This is a configuration from service server. OK!")
 
 def draw_config_server():
     rospy.init_node('draw_config_server')
