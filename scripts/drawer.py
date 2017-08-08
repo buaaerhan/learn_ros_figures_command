@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding:utf-8 -*-
 
 # 本节点注册到draw_figure话题，从其接收消息，并执行相应指令
 # 注意需要用到matplotlib和numpy支持包，python版本为2.7
