@@ -11,9 +11,9 @@ def draw_figure_client(figure_command):
 
     try:
 
-        draw_config = rospy.ServiceProxy('draw_config',DrawConfig)
+        draw_config_client = rospy.ServiceProxy('draw_config',DrawConfig)
 
-        resp = draw_config.call(DrawConfigRequest(figure_command))
+        resp = draw_config_client.call(DrawConfigRequest(figure_command))
 
         print resp.configuration
 

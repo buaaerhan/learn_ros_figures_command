@@ -144,4 +144,100 @@ srv文件夹，然后新建DrawConfig.srv文件，如下：
 
 看到，srv文件与msg文件极其类似，srv文件可以看成是双向的msg。
 
+**service通信文件的编写**
 
+由前面的描述我们已经知道，service通信机制下，有一个是发起请求端，另外一端是接收请求消息，进行相应
+
+动作，并且给请求端发送反馈信息。具体代码可参见commander_srv_client.py以及commander_srv_server.py
+
+		#!/usr/bin/env python
+		# -*- coding:utf-8 -*-
+		# Filename: commander_srv_server.py
+		# 由于注释使用了中文，因此在第二行中声明使用utf8编码方式
+
+		# 导入必要模块
+		from learn_ros_figures_command.srv import *
+		import rospy
+		import matplotlib as plt
+		import numpy as np
+		from drawer import draw
+
+		# 定义service的处理函数，相当于msg中的回调函数，用于处理接收到的信息
+		def handle_function(figure_command):
+
+		# 注意此处调用request中的信息的方式，与之前各node之间通过topic传输消息的调用方式是一样的
+		# 都是将其看作是对象中的一个属性。调用时直接按照object.attribute的方式调用
+		print "You want to draw a %s"%figure_command.figures
+
+		# 将request数据传入draw函数，画图。注意，draw函数本身是为topic&message的通信方式
+		# 设计的，也就是说draw函数的输入量是一个Figures类型的message，但是此处输入量却是一个
+		# DrawConfig类型的service，令人意外地，函数能够正常工作。这也从另外一个方面说明了，
+		# message和service本质上是一样的，都是一个对象，只要这个里面包含了draw函数所需要的属性即可。
+		draw(figure_command)
+
+		# 为了能将反馈信息传送到response中去，这里需要返回一个DrawConfigResponse类。注意，
+		# 这个类是ROS机制在使用service时自动生成的。
+		return DrawConfigResponse("This is a configuration from service server. OK!")
+
+		def draw_config_server():
+			# 初始化server节点，命名为draw_config_server
+			rospy.init_node('draw_config_server')
+
+			# 创建service server，service类型为DrawConfig，名字为draw_config,将接收到的request信息
+			# 传送给handle_function做处理并且返回response信息
+			s = rospy.Service('draw_config',DrawConfig,handle_function)
+			rospy.spin()
+
+
+		if __name__=="__main__":
+			draw_config_server()
+
+
+		
+		#!/usr/bin/env python
+		# -*- coding:utf-8 -*-
+		# Filename: commander_srv_client.py
+
+		import sys
+		import rospy
+		from learn_ros_figures_command.srv import *
+
+		def draw_figure_client(figure_command):
+
+			rospy.wait_for_service('draw_config')
+
+			try:
+
+				draw_config_client = rospy.ServiceProxy('draw_config',DrawConfig)
+
+				resp = draw_config_client.call(DrawConfigRequest(figure_command))
+
+				print resp.configuration
+
+			except rospy.ServiceException, e:
+				print "Service call failed:%s"%e
+
+		if __name__=="__main__":
+    
+			figure_command = raw_input("please input a figure command:")
+			draw_figure_client(figure_command)
+
+代码讲解：
+
+		rospy.wait_for_service('draw_config')
+
+在名为draw_config的service可用之前，使程序一直处于等待状态。
+
+		draw_config_client = rospy.ServiceProxy('draw_config',DrawConfig)
+
+创建service客户端，service名称为draw_config,类型为DrawConfig
+
+		resp = draw_config_client.call(DrawConfigRequest(figure_command))
+
+注意这里的figure_command是一个输入字符串，由此作为request信息，传送到service上并
+
+返回一个response对象，里面包含response信息。
+
+		print resp.configuration
+
+这里输出response对象中的configuration信息，是server端发送过来的反馈信息。
